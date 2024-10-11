@@ -27,7 +27,7 @@ export class PushstateExtension extends BaseExtension<Event> {
 		}
 		removeEventListener('popstate', this.#_onPopState);
 	}
-	
+
 	onPopState(ev: PopStateEvent) {
 		this.lastPopStateEvent = ev;
 		this.tracker.trackPageview();

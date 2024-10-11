@@ -34,7 +34,10 @@ describe('VisibilityExtension', () => {
 			it('should remove visibilitychange', () => {
 				const removeEventListenerSpy = vi.spyOn(globalThis, 'removeEventListener');
 				ext.destroy();
-				expect(removeEventListenerSpy).toHaveBeenCalledWith('visibilitychange', expect.any(Function));
+				expect(removeEventListenerSpy).toHaveBeenCalledWith(
+					'visibilitychange',
+					expect.any(Function)
+				);
 			});
 		});
 	});

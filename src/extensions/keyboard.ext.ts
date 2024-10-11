@@ -15,10 +15,7 @@ export class KeyboardExtension extends BaseExtension<KeyboardEvent> {
 	}
 
 	isLastKeyboardEventCtrl() {
-		return (
-			!!this.lastEvent &&
-			(this.lastEvent.ctrlKey || this.lastEvent.metaKey)
-		);
+		return !!this.lastEvent && (this.lastEvent.ctrlKey || this.lastEvent.metaKey);
 	}
 
 	getExitReason(unload: boolean = false) {

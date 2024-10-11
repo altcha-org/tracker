@@ -46,11 +46,11 @@ describe('PushstateExtension', () => {
 		});
 
 		describe('.onPushState()', () => {
-      it('should call tracker.trackPageview()', () => {
-        const trackedPageviewSpy = vi.spyOn(tracker, 'trackPageview');
-        ext.onPushState();
-        expect(trackedPageviewSpy).toHaveBeenCalled();
-      });
-    });
+			it('should call tracker.trackPageview()', () => {
+				const trackedPageviewSpy = vi.spyOn(tracker, 'trackPageview');
+				ext.onPushState();
+				expect(trackedPageviewSpy).toHaveBeenCalled();
+			});
+		});
 	});
 });

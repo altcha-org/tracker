@@ -34,13 +34,18 @@
   },
   "scripts": {
     "dev": "vite",
-    "build": "rimraf dist && tsc && vite build -c vite.config.js",
+    "build": "npm run build:module && npm run build:bundle",
+    "build:module": "rimraf dist && tsc && vite build -c vite.config.js",
     "build:bundle": "rimraf dist_bundle && tsc && vite build -c vite.bundle.config.js",
+    "format": "prettier --write ./src/**/*",
     "preview": "vite preview",
-    "test": "vitest run"
+    "test": "vitest run",
+    "prepare": "husky"
   },
   "devDependencies": {
+    "husky": "^9.1.6",
     "jsdom": "^25.0.1",
+    "prettier": "^3.3.3",
     "rimraf": "^6.0.1",
     "typescript": "^5.5.3",
     "vite": "^5.4.1",

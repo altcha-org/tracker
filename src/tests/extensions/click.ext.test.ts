@@ -17,7 +17,7 @@ describe('ClickExtension', () => {
 		const result = new ClickExtension(tracker, {});
 		expect(result).toBeInstanceOf(ClickExtension);
 		expect(addEventListenerSpy).toHaveBeenCalledWith('click', expect.any(Function), {
-			capture: true,
+			capture: true
 		});
 	});
 
@@ -40,30 +40,30 @@ describe('ClickExtension', () => {
 			});
 		});
 
-    describe('.getExitReason()', () => {
-      let a: HTMLAnchorElement;
+		describe('.getExitReason()', () => {
+			let a: HTMLAnchorElement;
 
-      beforeEach(() => {
-        a = document.createElement('a');
-      });
+			beforeEach(() => {
+				a = document.createElement('a');
+			});
 
-      it('should return outbound url if clicked on a A element with external URL', () => {
-        a.setAttribute('href', 'https://google.com/');
-        ext.onClick({
-          target: a,
-          timeStamp: performance.now(),
-        } as any);
-        expect(ext.getExitReason()).toEqual('https://google.com/');
-      });
+			it('should return outbound url if clicked on a A element with external URL', () => {
+				a.setAttribute('href', 'https://google.com/');
+				ext.onClick({
+					target: a,
+					timeStamp: performance.now()
+				} as any);
+				expect(ext.getExitReason()).toEqual('https://google.com/');
+			});
 
-      it('should return undefined if clicked on a A element with internal URL', () => {
-        a.setAttribute('href', '/test');
-        ext.onClick({
-          target: a,
-          timeStamp: performance.now(),
-        } as any);
-        expect(ext.getExitReason()).toBeUndefined();
-      });
-    });
+			it('should return undefined if clicked on a A element with internal URL', () => {
+				a.setAttribute('href', '/test');
+				ext.onClick({
+					target: a,
+					timeStamp: performance.now()
+				} as any);
+				expect(ext.getExitReason()).toBeUndefined();
+			});
+		});
 	});
 });

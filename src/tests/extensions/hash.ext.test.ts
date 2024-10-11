@@ -39,11 +39,11 @@ describe('HashExtension', () => {
 		});
 
 		describe('.onHashChange()', () => {
-      it('should call tracker.trackPageview()', () => {
-        const trackedPageviewSpy = vi.spyOn(tracker, 'trackPageview');
-        ext.onHashChange();
-        expect(trackedPageviewSpy).toHaveBeenCalled();
-      });
-    });
+			it('should call tracker.trackPageview()', () => {
+				const trackedPageviewSpy = vi.spyOn(tracker, 'trackPageview');
+				ext.onHashChange();
+				expect(trackedPageviewSpy).toHaveBeenCalled();
+			});
+		});
 	});
 });

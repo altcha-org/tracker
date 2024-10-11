@@ -5,15 +5,15 @@ import type { Tracker } from '../tracker';
 export class VisibilityExtension extends BaseExtension<Event> {
 	readonly #_onVisibilityChange = this.onVisibilityChange.bind(this);
 
-  readonly #hiddenTimeout: number;
+	readonly #hiddenTimeout: number;
 
-  #timeout: ReturnType<typeof setTimeout> | null = null;
+	#timeout: ReturnType<typeof setTimeout> | null = null;
 
 	visibilityState: DocumentVisibilityState = document.visibilityState;
 
 	constructor(tracker: Tracker, options: IVivibilityExtensionOptions) {
 		super(tracker);
-    this.#hiddenTimeout = options.hiddenTimeout || 4000;
+		this.#hiddenTimeout = options.hiddenTimeout || 4000;
 		addEventListener('visibilitychange', this.#_onVisibilityChange);
 	}
 
@@ -36,26 +36,26 @@ export class VisibilityExtension extends BaseExtension<Event> {
 		return undefined;
 	}
 
-  onTimeout() {
-    if (document.visibilityState === 'hidden') {
-      // track pageview as exit when hidden on timeout
-      this.tracker.trackPageview({}, true);
-    }
-  }
+	onTimeout() {
+		if (document.visibilityState === 'hidden') {
+			// track pageview as exit when hidden on timeout
+			this.tracker.trackPageview({}, true);
+		}
+	}
 
 	onVisibilityChange(ev: Event) {
 		this.lastEvent = ev;
 		this.visibilityState = document.visibilityState;
-    if (this.tracker.isMobile) {
-      // set timeout only on mobile devices
-      if (this.#timeout) {
-        clearTimeout(this.#timeout);
-      } 
-      if (document.visibilityState === 'hidden') {
-        this.#timeout = setTimeout(() => {
-          this.onTimeout();
-        }, this.#hiddenTimeout);
-      }
-    }
+		if (this.tracker.isMobile) {
+			// set timeout only on mobile devices
+			if (this.#timeout) {
+				clearTimeout(this.#timeout);
+			}
+			if (document.visibilityState === 'hidden') {
+				this.#timeout = setTimeout(() => {
+					this.onTimeout();
+				}, this.#hiddenTimeout);
+			}
+		}
 	}
 }

@@ -8,7 +8,7 @@ export class ClickExtension extends BaseExtension<MouseEvent> {
 	constructor(tracker: Tracker, _options: IBaseExtensionOptions) {
 		super(tracker);
 		addEventListener('click', this.#_onClick, {
-			capture: true,
+			capture: true
 		});
 	}
 
