@@ -1,0 +1,52 @@
+{
+  "name": "@altcha/tracker",
+  "description": "JavaScript client for ALTCHA Analytics.",
+  "version": "0.1.0",
+  "license": "MIT",
+  "author": {
+    "name": "Daniel Regeci",
+    "url": "https://altcha.org"
+  },
+  "homepage": "https://altcha.org",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/altcha-org/tracker"
+  },
+  "type": "module",
+  "keywords": [
+    "altcha",
+    "analytics",
+    "statistics",
+    "tracker",
+    "svelte"
+  ],
+  "files": [
+    "dist",
+    "dist_bundle"
+  ],
+  "main": "./dist/tracker.umd.cjs",
+  "module": "./dist/tracker.js",
+  "exports": {
+    ".": {
+      "import": "./dist/tracker.js",
+      "require": "./dist/tracker.umd.cjs"
+    }
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "rimraf dist && tsc && vite build -c vite.config.js",
+    "build:bundle": "rimraf dist_bundle && tsc && vite build -c vite.bundle.config.js",
+    "preview": "vite preview",
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "jsdom": "^25.0.1",
+    "rimraf": "^6.0.1",
+    "typescript": "^5.5.3",
+    "vite": "^5.4.1",
+    "vitest": "^2.1.1"
+  },
+  "optionalDependencies": {
+    "@rollup/rollup-linux-x64-gnu": "4.18.0"
+  }
+}

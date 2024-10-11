@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ALTCHA Analytics Script</title>
+  </head>
+  <body>
+    <div id="app">
+
+      <div>
+        Links:
+        <ul>
+          <li><a href="/">/</a></li>
+          <li><a href="/page1">/page1</a></li>
+          <li><a href="/page2">/page2</a></li>
+        </ul>
+      </div>
+
+      <div>
+        PushState:
+        <ul>
+          <li><a href="" onclick="history.pushState({}, '', '/page1');return false">/page1</a></li>
+          <li><a href="" onclick="history.pushState({}, '', '/page2');return false">/page2</a></li>
+        </ul>
+      </div>
+
+      <div>
+        Hash:
+        <ul>
+          <li><a href="#page1">#page1</a></li>
+          <li><a href="#page2">#page2</a></li>
+        </ul>
+      </div>
+
+      <div>
+        Outbound:
+        <ul>
+          <li><a href="https://news.ycombinator.com">news.ycombinator.com</a></li>
+          <li><a href="" data-link="https://news.ycombinator.com" onclick="location.href = 'https://news.ycombinator.com';return false">news.ycombinator.com (JS)</a></li>
+        </ul>
+      </div>
+
+    </div>
+
+    <style>
+      body {
+        font-family: sans-serif;
+      }
+      #app {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+      }
+    </style>
+
+    <script type="module" src="/src/main.ts" data-project="xx" data-debug="true"></script>
+  </body>
+</html>
