@@ -2,7 +2,7 @@ import { Tracker } from './tracker';
 import type { ITrackerOptions } from './types';
 
 const currentScript = document.currentScript;
-const region = currentScript?.getAttribute('src')?.match(/([^\.]+)\.altcha\.org/)?.[1];
+const region = currentScript?.getAttribute('src')?.match(/([\w\-]+)\.altcha\.org/)?.[1];
 const attrs = currentScript?.getAttributeNames() || [];
 const options = attrs.reduce((acc, attr) => {
 	if (attr.startsWith('data-')) {
