@@ -86,6 +86,7 @@ describe('Tracker', () => {
 			const tracker = new Tracker({
 				globalName: null,
 				click: false,
+				filter: false,
 				keyboard: false,
 				mouse: false,
 				pushstate: false,
@@ -99,6 +100,7 @@ describe('Tracker', () => {
 			const tracker = new Tracker({
 				globalName: null,
 				click: false,
+				filter: false,
 				keyboard: false,
 				mouse: false,
 				pushstate: true,
@@ -177,6 +179,7 @@ describe('Tracker', () => {
 				projectId: '1'
 			});
 			vi.restoreAllMocks();
+			vi.spyOn(tracker, 'getHostname').mockReturnValue('example.com');
 		});
 
 		describe('.destroy()', () => {
@@ -203,7 +206,8 @@ describe('Tracker', () => {
 		});
 
 		describe('.getHostname()', () => {
-			it('should return current location hostnane (localhost by default in JSDOM)', () => {
+			it('should return current location hostname (localhost by default in JSDOM)', () => {
+				vi.restoreAllMocks();
 				expect(tracker.getHostname()).toEqual('localhost');
 			});
 		});

@@ -6,6 +6,7 @@
 import { BaseExtension } from './extensions/base.ext';
 import { ClickExtension } from './extensions/click.ext';
 import { CookieExtension } from './extensions/cookie.ext';
+import { FilterExtension } from './extensions/filter.ext';
 import { HashExtension } from './extensions/hash.ext';
 import { KeyboardExtension } from './extensions/keyboard.ext';
 import { MouseExtension } from './extensions/mouse.ext';
@@ -21,6 +22,7 @@ export class Tracker {
 	static readonly EXTENSIONS = {
 		click: ClickExtension,
 		cookie: CookieExtension,
+		filter: FilterExtension,
 		hash: HashExtension,
 		keyboard: KeyboardExtension,
 		mouse: MouseExtension,
@@ -34,6 +36,7 @@ export class Tracker {
 	// Default set of enabled extensions when initializing the tracker
 	static readonly DEFAULT_EXTENSIONS: TExtentionName[] = [
 		'click',
+		'filter',
 		'keyboard',
 		'mouse',
 		'pushstate',
@@ -48,7 +51,7 @@ export class Tracker {
 
 	// Boolean flag indicating if the user is on a mobile device
 	readonly isMobile: boolean = /Mobi|Android|iPhone|iPad|iPod|Opera Mini/i.test(
-		navigator.userAgent || ''
+		this.getUserAgent()
 	);
 
 	// Array to store tracked events
@@ -196,6 +199,13 @@ export class Tracker {
 	}
 
 	/**
+	 * Returns the current "user-agent".
+	 */
+	getUserAgent() {
+		return navigator.userAgent || '';
+	}
+
+	/**
 	 * Returns the sanitized URL of the current page, excluding unwanted query parameters.
 	 */
 	getView() {
@@ -316,6 +326,22 @@ export class Tracker {
 	}
 
 	/**
+	 * Checks, whether the event should be tracked.
+	 * 
+	 * @returns {boolean} Returns true if the event should be tracked.
+	 */
+	shouldTrackEvent(event: IEvent): boolean {
+		for (const ext in this.extensions) {
+			const result = this.extensions[ext as TExtentionName].shouldTrackEvent(event);
+			if (result !== true) {
+				this.log('should not track event:', { ext, event });
+				return false;
+			}
+		}
+		return true;
+	}
+
+	/**
 	 * Tracks a custom event with optional parameters.
 	 *
 	 * @param {Partial<IEvent>} options - Optional event details to customize the tracked event. Any properties in the IEvent interface can be passed here. Defaults to an empty object.
@@ -331,13 +357,16 @@ export class Tracker {
 			timestamp: Date.now(),
 			...options
 		};
-		this.events.push(event);
-		this.trackedEvents += 1;
-		this.log('trackEvent', event);
-		if (unload) {
-			this.flushEvents();
+		if (this.shouldTrackEvent(event)) {
+			this.events.push(event);
+			this.trackedEvents += 1;
+			this.log('trackEvent', event);
+			if (unload) {
+				this.flushEvents();
+			}
+			return true;
 		}
-		return true;
+		return false;
 	}
 
 	/**

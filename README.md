@@ -11,7 +11,7 @@ ALTCHA Analytics provides a privacy-first, GDPR-compliant alternative to traditi
 - No cookies or fingerprinting required
 - Flexible: Use for web, app, or API analytics
 - Customizable event tracking and properties
-- Lightweight (~3.5kB gzipped)
+- Lightweight (~4kB gzipped)
 
 ## Installation & Usage
 
@@ -121,14 +121,50 @@ You can configure this extension with the following options:
 new Tracker({
   projectId: '...',
   cookie: {
-    cookieExpireDays: 30, // Cookie expiration in days
-    cookieName: '_altcha_visited', // Cookie name
-    cookiePath: '/', // Cookie path (defaults to '/')
+    // Cookie expiration in days
+    cookieExpireDays: 30,
+    // Cookie name
+    cookieName: '_altcha_visited',
+    // Cookie path (defaults to '/')
+    cookiePath: '/',
   }
 })
 ```
 
 Note: Enabling this extension may require user consent under GDPR.
+
+### Filter
+
+Enabled by default.
+
+Event filtering allows you to exclude events based on the user-agent, hostname, or a custom filter function. This helps you ensure only relevant events are tracked.
+
+By default, the filtering extension ignores:
+
+- Bots and crawlers.
+- Private hostnames such as `localhost`, `127.0.0.1`, and `*.local`.
+
+You can also manually prevent your own events from being tracked by setting `localStorage.altcha_ignore=true` in the browser.
+
+```js
+new Tracker({
+  projectId: '...',
+  filter: {
+    // Set to true to allow reporting of events made by bots and crawlers (default: false).
+    allowBots: true,
+    
+    // A custom function for additional event filtering. 
+    // Return `false` to ignore the event, or `undefined` to continue with the built-in checks.
+    checkFn: (event) => {
+      return false;  // Example: Ignore all events.
+    },
+    
+    // An array of hostnames to ignore from tracking.
+    // Override the default list of private hostnames.
+    hostnames: ['localhost'],
+  }
+});
+```
 
 ### Hash
 

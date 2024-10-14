@@ -27,6 +27,27 @@ export interface ICookieExtensionOptions extends IBaseExtensionOptions {
 }
 
 /**
+ * Options specific to the Filter Extension.
+ */
+export interface IFilterExtensionOptions extends IBaseExtensionOptions {
+  /**
+   * Set to true to report events made by bots and crawlers.
+   */
+  allowBots?: boolean;
+  /**
+   * A custom check function.
+   * 
+   * @param event
+   * @returns Boolean or undefined.
+   */
+  checkFn?: (event: IEvent) => boolean | undefined | void;
+  /** 
+   * A list of hostnames to exclude from tracked data (default: 'localhost')
+   */
+  hostnames?: string[];
+}
+
+/**
  * Options specific to the Visibility Extension.
  */
 export interface IVivibilityExtensionOptions extends IBaseExtensionOptions {
@@ -98,6 +119,10 @@ export interface ITrackerOptions {
    * Enable or disable debug mode (default: false).
    */
   debug?: boolean;
+  /** 
+   * Filter extension configuration (or set to boolean to enable/disable).
+   */
+  filter?: IBaseExtensionOptions | boolean;
   /** 
    * Global variable name for the tracker instance in the browser (set to false or null to disable global name).
    */

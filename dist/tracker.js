@@ -1,11 +1,11 @@
-var U = Object.defineProperty;
-var T = (s) => {
+var X = Object.defineProperty;
+var O = (s) => {
   throw TypeError(s);
 };
-var _ = (s, e, t) => e in s ? U(s, e, { enumerable: !0, configurable: !0, writable: !0, value: t }) : s[e] = t;
-var o = (s, e, t) => _(s, typeof e != "symbol" ? e + "" : e, t), N = (s, e, t) => e.has(s) || T("Cannot " + t);
-var n = (s, e, t) => (N(s, e, "read from private field"), t ? t.call(s) : e.get(s)), a = (s, e, t) => e.has(s) ? T("Cannot add the same private member more than once") : e instanceof WeakSet ? e.add(s) : e.set(s, t), l = (s, e, t, i) => (N(s, e, "write to private field"), i ? i.call(s, t) : e.set(s, t), t), A = (s, e, t) => (N(s, e, "access private method"), t);
-class d {
+var B = (s, e, t) => e in s ? X(s, e, { enumerable: !0, configurable: !0, writable: !0, value: t }) : s[e] = t;
+var o = (s, e, t) => B(s, typeof e != "symbol" ? e + "" : e, t), R = (s, e, t) => e.has(s) || O("Cannot " + t);
+var n = (s, e, t) => (R(s, e, "read from private field"), t ? t.call(s) : e.get(s)), a = (s, e, t) => e.has(s) ? O("Cannot add the same private member more than once") : e instanceof WeakSet ? e.add(s) : e.set(s, t), l = (s, e, t, i) => (R(s, e, "write to private field"), i ? i.call(s, t) : e.set(s, t), t), _ = (s, e, t) => (R(s, e, "access private method"), t);
+class u {
   constructor(e, t = { disable: !1 }) {
     o(this, "lastEvent", null);
     this.tracker = e, this.options = t;
@@ -17,18 +17,21 @@ class d {
   isLastEventRecent(e = 1e4, t = this.lastEvent) {
     return !!t && performance.now() - t.timeStamp < e;
   }
+  shouldTrackEvent(e) {
+    return !0;
+  }
 }
-var E;
-class I extends d {
+var f;
+class V extends u {
   constructor(t, i) {
     super(t);
-    a(this, E, this.onClick.bind(this));
-    addEventListener("click", n(this, E), {
+    a(this, f, this.onClick.bind(this));
+    addEventListener("click", n(this, f), {
       capture: !0
     });
   }
   destroy() {
-    removeEventListener("click", n(this, E));
+    removeEventListener("click", n(this, f));
   }
   getExitReason() {
     if (this.lastEvent && this.isLastEventRecent()) {
@@ -45,18 +48,18 @@ class I extends d {
     i && i.tagName === "A" && (this.lastEvent = t);
   }
 }
-E = new WeakMap();
-var u, f, p;
-class V extends d {
+f = new WeakMap();
+var g, p, m;
+class G extends u {
   constructor(t, i) {
     super(t);
-    a(this, u);
-    a(this, f);
+    a(this, g);
     a(this, p);
-    l(this, u, i.cookieName || "_altcha_visited"), l(this, f, i.cookieExpireDays || 30), l(this, p, i.cookiePath || "/"), this.getCookie(n(this, u)) === "1" && (this.tracker.returningVisitor = !0), this.setCookie(
-      n(this, u),
+    a(this, m);
+    l(this, g, i.cookieName || "_altcha_visited"), l(this, p, i.cookieExpireDays || 30), l(this, m, i.cookiePath || "/"), this.getCookie(n(this, g)) === "1" && (this.tracker.returningVisitor = !0), this.setCookie(
+      n(this, g),
       "1",
-      new Date(Date.now() + 864e5 * n(this, f))
+      new Date(Date.now() + 864e5 * n(this, p))
     );
   }
   destroy() {
@@ -69,34 +72,69 @@ class V extends d {
     return null;
   }
   setCookie(t, i, r) {
-    document.cookie = t + "=" + i + "; expires=" + r.toUTCString() + `; SameSite=Strict; path=${n(this, p) || "/"}`;
+    document.cookie = t + "=" + i + "; expires=" + r.toUTCString() + `; SameSite=Strict; path=${n(this, m) || "/"}`;
   }
 }
-u = new WeakMap(), f = new WeakMap(), p = new WeakMap();
-var m;
-class X extends d {
+g = new WeakMap(), p = new WeakMap(), m = new WeakMap();
+var b, k;
+const c = class c extends u {
   constructor(t, i) {
     super(t);
-    a(this, m, this.onHashChange.bind(this));
-    addEventListener("hashchange", n(this, m));
+    a(this, b);
+    a(this, k, !1);
+    this.options = i, l(this, k, localStorage.getItem(c.LOCAL_STORAGE_KEY) === "true"), l(this, b, (i.hostnames || c.DEFAULT_HOSTNAMES).map((r) => r.includes("*") ? new RegExp(r.replace(/\*/g, "[^.]+")) : r));
+  }
+  checkFn(t) {
+    if (this.options.checkFn)
+      return this.options.checkFn(t);
   }
   destroy() {
-    removeEventListener("hashchange", n(this, m));
+  }
+  isBot() {
+    return c.CRAWLER_REG_EXP.test(this.tracker.getUserAgent());
+  }
+  isPrivateHostname() {
+    const t = this.tracker.getHostname();
+    return n(this, b).some((i) => i instanceof RegExp && i.test(t) ? !0 : t === i);
+  }
+  /**
+   * Checks, whether the event should be tracked or excluded.
+   *
+   * @returns {boolean}
+   */
+  shouldTrackEvent(t) {
+    if (n(this, k))
+      return this.tracker.log(`ignoring event: ${c.LOCAL_STORAGE_KEY}`), !1;
+    const i = this.checkFn(t);
+    return i !== void 0 ? i : this.isPrivateHostname() ? (this.tracker.log("ignoring event: private hostname"), !1) : this.options.allowBots !== !0 && this.isBot() ? (this.tracker.log("ignoring event: bot"), !1) : !0;
+  }
+};
+b = new WeakMap(), k = new WeakMap(), o(c, "CRAWLER_REG_EXP", /(?:bot|spider|crawler|facebookexternalhit|simplepie|yahooseeker|embedly|quora link preview|outbrain|vkshare|monit|Pingability|Monitoring|WinHttpRequest|Apache-HttpClient|getprismatic.com|python-requests|Twurly|yandex|browserproxy|Qwantify|Yahoo! Slurp|pinterest|Tumblr|WhatsApp|Google-Structured-Data-Testing-Tool|Google-InspectionTool|GPTBot|Applebot)/i), o(c, "DEFAULT_HOSTNAMES", ["127.0.0.1", "localhost", "*.local"]), o(c, "LOCAL_STORAGE_KEY", "altcha_ignore");
+let C = c;
+var y;
+class K extends u {
+  constructor(t, i) {
+    super(t);
+    a(this, y, this.onHashChange.bind(this));
+    addEventListener("hashchange", n(this, y));
+  }
+  destroy() {
+    removeEventListener("hashchange", n(this, y));
   }
   onHashChange() {
     this.tracker.trackPageview();
   }
 }
-m = new WeakMap();
-var b;
-class H extends d {
+y = new WeakMap();
+var x;
+class F extends u {
   constructor(t, i) {
     super(t);
-    a(this, b, this.onKeyDown.bind(this));
-    addEventListener("keydown", n(this, b));
+    a(this, x, this.onKeyDown.bind(this));
+    addEventListener("keydown", n(this, x));
   }
   destroy() {
-    removeEventListener("keydown", n(this, b));
+    removeEventListener("keydown", n(this, x));
   }
   isLastKeyboardEventCtrl() {
     return !!this.lastEvent && (this.lastEvent.ctrlKey || this.lastEvent.metaKey);
@@ -109,20 +147,20 @@ class H extends d {
     this.lastEvent = t;
   }
 }
-b = new WeakMap();
-var k, y;
-class B extends d {
+x = new WeakMap();
+var L, w;
+class Y extends u {
   constructor(t, i) {
     super(t);
-    a(this, k, this.onMouseEnter.bind(this));
-    a(this, y, this.onMouseLeave.bind(this));
+    a(this, L, this.onMouseEnter.bind(this));
+    a(this, w, this.onMouseLeave.bind(this));
     o(this, "isMouseOut", !1);
     o(this, "offsetX", -1);
     o(this, "offsetY", -1);
-    document.body.addEventListener("mouseleave", n(this, y)), document.body.addEventListener("mouseenter", n(this, k));
+    document.body.addEventListener("mouseleave", n(this, w)), document.body.addEventListener("mouseenter", n(this, L));
   }
   destroy() {
-    document.body.removeEventListener("mouseleave", n(this, y)), document.body.removeEventListener("mouseenter", n(this, k));
+    document.body.removeEventListener("mouseleave", n(this, w)), document.body.removeEventListener("mouseenter", n(this, L));
   }
   getExitReason() {
     if (this.isMouseOut) {
@@ -137,22 +175,22 @@ class B extends d {
     this.isMouseOut = !0, this.offsetX = t.clientX, this.offsetY = t.clientY;
   }
 }
-k = new WeakMap(), y = new WeakMap();
-var v, x, L;
-class K extends d {
+L = new WeakMap(), w = new WeakMap();
+var v, P, A;
+class q extends u {
   constructor(t, i) {
     super(t);
     a(this, v, null);
-    a(this, x, this.onPopState.bind(this));
-    a(this, L, this.onPushState.bind(this));
+    a(this, P, this.onPopState.bind(this));
+    a(this, A, this.onPushState.bind(this));
     o(this, "lastPopStateEvent", null);
     const r = l(this, v, history.pushState);
-    history.pushState = (D, M, O) => {
-      n(this, L).call(this), r == null || r.apply(history, [D, M, O]);
-    }, addEventListener("popstate", n(this, x));
+    history.pushState = (M, H, I) => {
+      n(this, A).call(this), r == null || r.apply(history, [M, H, I]);
+    }, addEventListener("popstate", n(this, P));
   }
   destroy() {
-    n(this, v) && (history.pushState = n(this, v)), removeEventListener("popstate", n(this, x));
+    n(this, v) && (history.pushState = n(this, v)), removeEventListener("popstate", n(this, P));
   }
   onPopState(t) {
     this.lastPopStateEvent = t, this.tracker.trackPageview();
@@ -161,19 +199,19 @@ class K extends d {
     this.tracker.trackPageview();
   }
 }
-v = new WeakMap(), x = new WeakMap(), L = new WeakMap();
-var w, P, g;
-class F extends d {
+v = new WeakMap(), P = new WeakMap(), A = new WeakMap();
+var S, T, E;
+class W extends u {
   constructor(t, i) {
     super(t);
-    a(this, w, this.onVisibilityChange.bind(this));
-    a(this, P);
-    a(this, g, null);
+    a(this, S, this.onVisibilityChange.bind(this));
+    a(this, T);
+    a(this, E, null);
     o(this, "visibilityState", document.visibilityState);
-    l(this, P, i.hiddenTimeout || 4e3), addEventListener("visibilitychange", n(this, w));
+    l(this, T, i.hiddenTimeout || 4e3), addEventListener("visibilitychange", n(this, S));
   }
   destroy() {
-    removeEventListener("visibilitychange", n(this, w));
+    removeEventListener("visibilitychange", n(this, S));
   }
   getExitReason(t = !1) {
     if (t && this.visibilityState === "hidden" && this.lastEvent && performance.now() - this.lastEvent.timeStamp >= 1e3)
@@ -183,13 +221,13 @@ class F extends d {
     document.visibilityState === "hidden" && this.tracker.trackPageview({}, !0);
   }
   onVisibilityChange(t) {
-    this.lastEvent = t, this.visibilityState = document.visibilityState, this.tracker.isMobile && (n(this, g) && clearTimeout(n(this, g)), document.visibilityState === "hidden" && l(this, g, setTimeout(() => {
+    this.lastEvent = t, this.visibilityState = document.visibilityState, this.tracker.isMobile && (n(this, E) && clearTimeout(n(this, E)), document.visibilityState === "hidden" && l(this, E, setTimeout(() => {
       this.onTimeout();
-    }, n(this, P))));
+    }, n(this, T))));
   }
 }
-w = new WeakMap(), P = new WeakMap(), g = new WeakMap();
-var c, S, R;
+S = new WeakMap(), T = new WeakMap(), E = new WeakMap();
+var d, N, D;
 const h = class h {
   /**
    * Constructor to initialize the Tracker instance.
@@ -197,12 +235,12 @@ const h = class h {
    * @param options - Configuration options for the tracker, including project ID, API URL, and extension settings.
    */
   constructor(e) {
-    a(this, S);
+    a(this, N);
     // Bound method to handle the 'pagehide' event
-    a(this, c, this.onPageHide.bind(this));
+    a(this, d, this.onPageHide.bind(this));
     // Boolean flag indicating if the user is on a mobile device
     o(this, "isMobile", /Mobi|Android|iPhone|iPad|iPod|Opera Mini/i.test(
-      navigator.userAgent || ""
+      this.getUserAgent()
     ));
     // Array to store tracked events
     o(this, "events", []);
@@ -222,7 +260,7 @@ const h = class h {
     o(this, "trackedPageviews", 0);
     if (this.options = e, !e.projectId)
       throw new Error("Parameter projectId required.");
-    A(this, S, R).call(this), this.isDNTEnabled && this.options.respectDnt === !0 ? this.log("DoNotTrack enabled.") : (this.loadExtensions(), addEventListener("pagehide", n(this, c)), addEventListener("beforeunload", n(this, c)));
+    _(this, N, D).call(this), this.isDNTEnabled && this.options.respectDnt === !0 ? this.log("DoNotTrack enabled.") : (this.loadExtensions(), addEventListener("pagehide", n(this, d)), addEventListener("beforeunload", n(this, d)));
   }
   /**
    * Getter for the API URL. Returns the user-provided API URL or the default one.
@@ -243,7 +281,7 @@ const h = class h {
     this.flushEvents();
     for (const e in this.extensions)
       this.extensions[e].destroy();
-    this.extensions = {}, removeEventListener("pagehide", n(this, c)), removeEventListener("beforeunload", n(this, c)), this.globalName && delete globalThis[this.globalName];
+    this.extensions = {}, removeEventListener("pagehide", n(this, d)), removeEventListener("beforeunload", n(this, d)), this.globalName && delete globalThis[this.globalName];
   }
   /**
    * Flushes all collected events by sending them to the API.
@@ -299,6 +337,12 @@ const h = class h {
    */
   getOrigin() {
     return location.origin;
+  }
+  /**
+   * Returns the current "user-agent".
+   */
+  getUserAgent() {
+    return navigator.userAgent || "";
   }
   /**
    * Returns the sanitized URL of the current page, excluding unwanted query parameters.
@@ -387,6 +431,17 @@ const h = class h {
       return navigator.sendBeacon(this.apiUrl, JSON.stringify(this.getBeaconPayload(e)));
   }
   /**
+   * Checks, whether the event should be tracked.
+   * 
+   * @returns {boolean} Returns true if the event should be tracked.
+   */
+  shouldTrackEvent(e) {
+    for (const t in this.extensions)
+      if (this.extensions[t].shouldTrackEvent(e) !== !0)
+        return this.log("should not track event:", { ext: t, event: e }), !1;
+    return !0;
+  }
+  /**
    * Tracks a custom event with optional parameters.
    *
    * @param {Partial<IEvent>} options - Optional event details to customize the tracked event. Any properties in the IEvent interface can be passed here. Defaults to an empty object.
@@ -402,7 +457,7 @@ const h = class h {
       timestamp: Date.now(),
       ...e
     };
-    return this.events.push(i), this.trackedEvents += 1, this.log("trackEvent", i), t && this.flushEvents(), !0;
+    return this.shouldTrackEvent(i) ? (this.events.push(i), this.trackedEvents += 1, this.log("trackEvent", i), t && this.flushEvents(), !0) : !1;
   }
   /**
    * Tracks a pageview event and handles duplicate pageviews and page load timing.
@@ -432,12 +487,12 @@ const h = class h {
     this.lastPageview !== this.getView() && this.trackPageview({}, !0);
   }
 };
-c = new WeakMap(), S = new WeakSet(), /**
+d = new WeakMap(), N = new WeakSet(), /**
  * Registers the global name for the tracker instance.
  *
  * @returns True if the global name was registered, false otherwise.
  */
-R = function() {
+D = function() {
   if (this.globalName = this.options.globalName === void 0 ? h.DEAFAUL_GLOBAL_NAME : this.options.globalName || null, this.globalName) {
     if (globalThis[this.globalName])
       throw new Error(
@@ -447,24 +502,26 @@ R = function() {
   }
 }, // Static property containing all available extensions
 o(h, "EXTENSIONS", {
-  click: I,
-  cookie: V,
-  hash: X,
-  keyboard: H,
-  mouse: B,
-  pushstate: K,
-  visibility: F
+  click: V,
+  cookie: G,
+  filter: C,
+  hash: K,
+  keyboard: F,
+  mouse: Y,
+  pushstate: q,
+  visibility: W
 }), // Default API endpoint for sending events
 o(h, "DEFAULT_API_URL", "https://eu.altcha.org/api/v1/event"), // Default set of enabled extensions when initializing the tracker
 o(h, "DEFAULT_EXTENSIONS", [
   "click",
+  "filter",
   "keyboard",
   "mouse",
   "pushstate",
   "visibility"
 ]), // Default global name for the tracker instance
 o(h, "DEAFAUL_GLOBAL_NAME", "altchaTracker");
-let C = h;
+let U = h;
 export {
-  C as Tracker
+  U as Tracker
 };

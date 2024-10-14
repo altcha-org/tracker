@@ -1,5 +1,5 @@
 import type { Tracker } from '../tracker';
-import type { IBaseExtensionOptions } from '../types';
+import type { IBaseExtensionOptions, IEvent } from '../types';
 
 export class BaseExtension<TEvent extends Event> {
 	protected lastEvent: TEvent | null = null;
@@ -17,5 +17,9 @@ export class BaseExtension<TEvent extends Event> {
 
 	isLastEventRecent(threshold: number = 10000, ev = this.lastEvent) {
 		return !!ev && performance.now() - ev.timeStamp < threshold;
+	}
+
+	shouldTrackEvent(_event: IEvent) {
+		return true;
 	}
 }
